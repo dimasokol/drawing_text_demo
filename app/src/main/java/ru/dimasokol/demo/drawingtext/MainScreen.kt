@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -47,7 +48,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
-            TopAppBar(title = { Text("Text Drawing Demo") })
+            TopAppBar(title = { Text(stringResource(R.string.main_screen_title)) })
         },
     ) { innerPadding ->
         Column(
@@ -60,7 +61,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
             OutlinedTextField(
                 value = input,
                 onValueChange = { input = it },
-                label = { Text("Text to draw:") },
+                label = { Text(stringResource(R.string.text_to_draw_label)) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(120.dp),
@@ -69,7 +70,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
                 onClick = { drawnText = input },
                 enabled = input.isNotEmpty(),
             ) {
-                Text("Draw!")
+                Text(stringResource(R.string.draw_button))
             }
             DrawingArea(text = drawnText)
         }

@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Drawing Text</string>
+    <string name="main_screen_title">Text Drawing Demo</string>
+    <string name="text_to_draw_label">Text to draw:</string>
+    <string name="draw_button">Draw!</string>
 </resources>

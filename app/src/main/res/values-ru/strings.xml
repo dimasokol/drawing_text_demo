@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Drawing Text</string>
+    <string name="main_screen_title">Демо текста</string>
+    <string name="text_to_draw_label">Текст для отрисовки:</string>
+    <string name="draw_button">Рисуй!</string>
+</resources>
