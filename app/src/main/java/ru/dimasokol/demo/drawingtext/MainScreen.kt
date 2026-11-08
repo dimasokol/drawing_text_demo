@@ -40,7 +40,8 @@ private val DrawingAreaHeight = 240.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
-    var input by rememberSaveable { mutableStateOf("") }
+    val defaultText = stringResource(R.string.default_text)
+    var input by rememberSaveable { mutableStateOf(defaultText) }
     var drawnText by rememberSaveable { mutableStateOf("") }
     val drawingPolicy = remember { DefaultDrawingPolicy() }
 

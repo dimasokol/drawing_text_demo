@@ -3,4 +3,5 @@
     <string name="main_screen_title">Text Drawing Demo</string>
     <string name="text_to_draw_label">Text to draw:</string>
     <string name="draw_button">Draw!</string>
+    <string name="default_text">Something relevant, something brilliant. This is the default text for demo. Rewrite it, combining long and short words, or use as-is.</string>
 </resources>
