@@ -20,6 +20,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -27,12 +28,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import ru.dimasokol.demo.drawingtext.ui.theme.DrawingTextTheme
 
@@ -44,6 +42,7 @@ private val DrawingAreaHeight = 240.dp
 fun MainScreen(modifier: Modifier = Modifier) {
     var input by rememberSaveable { mutableStateOf("") }
     var drawnText by rememberSaveable { mutableStateOf("") }
+    val drawingPolicy = remember { DefaultDrawingPolicy() }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -72,7 +71,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
             ) {
                 Text(stringResource(R.string.draw_button))
             }
-            DrawingArea(text = drawnText)
+            DrawingArea(text = drawnText, policy = drawingPolicy)
         }
     }
 }
@@ -84,7 +83,11 @@ fun MainScreen(modifier: Modifier = Modifier) {
  * anything that does not fit vertically is clipped by the rounded box.
  */
 @Composable
-private fun DrawingArea(text: String, modifier: Modifier = Modifier) {
+private fun DrawingArea(
+    text: String,
+    policy: TextDrawingPolicy,
+    modifier: Modifier = Modifier,
+) {
     val textMeasurer = rememberTextMeasurer()
     val textStyle = MaterialTheme.typography.bodyLarge.copy(
         color = MaterialTheme.colorScheme.onSurface,
@@ -103,16 +106,12 @@ private fun DrawingArea(text: String, modifier: Modifier = Modifier) {
                 drawContent()
                 if (text.isEmpty()) return@drawWithContent
 
-                val layout = textMeasurer.measure(
-                    text = AnnotatedString(text),
+                val layout = policy.measure(
+                    textMeasurer = textMeasurer,
+                    text = text,
                     style = textStyle,
-                    overflow = TextOverflow.Clip,
-                    softWrap = true,
-                    maxLines = Int.MAX_VALUE,
-                    constraints = Constraints(
-                        maxWidth = size.width.toInt(),
-                        maxHeight = size.height.toInt(),
-                    ),
+                    width = size.width.toInt(),
+                    height = size.height.toInt(),
                 )
                 drawText(layout, topLeft = Offset.Zero)
             },
