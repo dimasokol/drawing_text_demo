@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Single-module Android app (`:app`) built with Jetpack Compose. Not a git repo (no VCS, CI, or release conventions exist here). Package/namespace: `ru.dimasokol.demo.drawingtext`.
+Single-module Android app (`:app`) built with Jetpack Compose. A git repo with no remote/CI or release conventions configured yet (see [Commit conventions](#commit-conventions) below). Package/namespace: `ru.dimasokol.demo.drawingtext`.
 
 Source of truth is the Gradle files — `gradle/libs.versions.toml`, `app/build.gradle.kts` — there is no README.
 
@@ -15,6 +15,23 @@ Source of truth is the Gradle files — `gradle/libs.versions.toml`, `app/build.
 ```
 
 There is no typecheck or formatter task; Kotlin compile is the typecheck (`kotlin.code.style=official`).
+
+## Commit conventions
+
+Every change goes into a commit (or a sequence of commits) that is:
+
+- **Atomic** — one commit solves exactly one task: one bug, one feature, one refactoring. Don't mix unrelated changes, especially don't bundle build/Docs/tooling noise into a feature commit (and vice versa). Split intermediate states that don't compile or don't run from the commit(s) that do.
+- **Self-describing** — each commit's message states the task *it* solves, not "what files changed". Use the imperative mood and keep the subject under ~50 chars, then a blank line and a short body explaining the *why* (the problem being solved) when it isn't obvious from the subject alone:
+
+  ```text
+  Subject line: the one task this commit accomplishes
+
+  Optional body: context — why this is needed, what wasn't working,
+  which behavior changes, trade-offs made.
+  ```
+
+- Written in the imperative ("Fix dangling caret in the drawing canvas", "Add color picking", "Migrate Compose BOM to 2026.02.01"), never the past tense, so the message reads as an instruction the commit already carries out.
+- Convention: when it matters, don't commit generated output (`build/`, `app/build/`), IDE files, or `local.properties`. `.gitignore` should already cover these; keep it that way.
 
 ## Gotchas
 
