@@ -15,6 +15,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -43,6 +46,8 @@ fun MainScreen(modifier: Modifier = Modifier) {
     val defaultText = stringResource(R.string.default_text)
     var input by rememberSaveable { mutableStateOf(defaultText) }
     var drawnText by rememberSaveable { mutableStateOf("") }
+    var enlargedText by rememberSaveable { mutableStateOf(false) }
+    var drawnEnlarged by rememberSaveable { mutableStateOf(false) }
     val drawingPolicy = remember { DefaultDrawingPolicy() }
 
     Scaffold(
@@ -66,13 +71,34 @@ fun MainScreen(modifier: Modifier = Modifier) {
                     .fillMaxWidth()
                     .height(120.dp),
             )
+            SingleChoiceSegmentedButtonRow(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                SegmentedButton(
+                    selected = !enlargedText,
+                    onClick = { enlargedText = false },
+                    shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
+                ) {
+                    Text(stringResource(R.string.text_size_normal))
+                }
+                SegmentedButton(
+                    selected = enlargedText,
+                    onClick = { enlargedText = true },
+                    shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
+                ) {
+                    Text(stringResource(R.string.text_size_large))
+                }
+            }
             Button(
-                onClick = { drawnText = input },
+                onClick = {
+                    drawnText = input
+                    drawnEnlarged = enlargedText
+                },
                 enabled = input.isNotEmpty(),
             ) {
                 Text(stringResource(R.string.draw_button))
             }
-            DrawingArea(text = drawnText, policy = drawingPolicy)
+            DrawingArea(text = drawnText, policy = drawingPolicy, enlargedText = drawnEnlarged)
         }
     }
 }
@@ -87,11 +113,14 @@ fun MainScreen(modifier: Modifier = Modifier) {
 private fun DrawingArea(
     text: String,
     policy: TextDrawingPolicy,
+    enlargedText: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val textMeasurer = rememberTextMeasurer()
-    val textStyle = MaterialTheme.typography.bodyLarge.copy(
+    val baseBodyLarge = MaterialTheme.typography.bodyLarge
+    val textStyle = baseBodyLarge.copy(
         color = MaterialTheme.colorScheme.onSurface,
+        fontSize = if (enlargedText) baseBodyLarge.fontSize * 1.2f else baseBodyLarge.fontSize,
     )
     val background = MaterialTheme.colorScheme.surfaceVariant
     val shape = RoundedCornerShape(8.dp)
