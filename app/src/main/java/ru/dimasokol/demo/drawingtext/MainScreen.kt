@@ -41,7 +41,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
+import ru.dimasokol.demo.drawingtext.policies.DefaultDrawingPolicy
+import ru.dimasokol.demo.drawingtext.policies.PrettyDrawingPolicy
+import ru.dimasokol.demo.drawingtext.policies.TextDrawingPolicy
 import ru.dimasokol.demo.drawingtext.ui.theme.DrawingTextTheme
 
 private val DrawingAreaWidth = 240.dp
@@ -188,8 +192,10 @@ private fun DrawingArea(
                     textMeasurer = textMeasurer,
                     text = text,
                     style = textStyle,
-                    width = size.width.toInt(),
-                    height = size.height.toInt(),
+                    constraints = Constraints(
+                        maxWidth = size.width.toInt(),
+                        maxHeight = size.height.toInt(),
+                    ),
                 )
                 drawText(layout, topLeft = Offset.Zero)
             },
