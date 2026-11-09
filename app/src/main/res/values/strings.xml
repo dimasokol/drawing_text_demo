@@ -6,4 +6,5 @@
     <string name="default_text">Something relevant, something brilliant. This is the default text for demo. Rewrite it, combining long and short words, or use as-is.</string>
     <string name="text_size_normal">Normal</string>
     <string name="text_size_large">Enlarged</string>
+    <string name="drawing_policy_label">Drawing policy</string>
 </resources>

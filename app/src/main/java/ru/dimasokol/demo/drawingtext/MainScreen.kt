@@ -9,16 +9,23 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -48,7 +55,10 @@ fun MainScreen(modifier: Modifier = Modifier) {
     var drawnText by rememberSaveable { mutableStateOf("") }
     var enlargedText by rememberSaveable { mutableStateOf(false) }
     var drawnEnlarged by rememberSaveable { mutableStateOf(false) }
-    val drawingPolicy = remember { DefaultDrawingPolicy() }
+    val drawingPolicies = remember { listOf(DefaultDrawingPolicy(), PrettyDrawingPolicy()) }
+    var selectedPolicyIndex by rememberSaveable { mutableStateOf(0) }
+    var drawnPolicyIndex by rememberSaveable { mutableStateOf(0) }
+    var policyMenuExpanded by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -60,6 +70,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                .verticalScroll(rememberScrollState())
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
@@ -89,16 +100,53 @@ fun MainScreen(modifier: Modifier = Modifier) {
                     Text(stringResource(R.string.text_size_large))
                 }
             }
+            ExposedDropdownMenuBox(
+                expanded = policyMenuExpanded,
+                onExpandedChange = { policyMenuExpanded = !policyMenuExpanded },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                TextField(
+                    value = drawingPolicies[selectedPolicyIndex].javaClass.simpleName,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text(stringResource(R.string.drawing_policy_label)) },
+                    trailingIcon = {
+                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = policyMenuExpanded)
+                    },
+                    modifier = Modifier
+                        .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                        .fillMaxWidth(),
+                )
+                ExposedDropdownMenu(
+                    expanded = policyMenuExpanded,
+                    onDismissRequest = { policyMenuExpanded = false },
+                ) {
+                    drawingPolicies.forEachIndexed { index, policy ->
+                        DropdownMenuItem(
+                            text = { Text(policy.javaClass.simpleName) },
+                            onClick = {
+                                selectedPolicyIndex = index
+                                policyMenuExpanded = false
+                            },
+                        )
+                    }
+                }
+            }
             Button(
                 onClick = {
                     drawnText = input
                     drawnEnlarged = enlargedText
+                    drawnPolicyIndex = selectedPolicyIndex
                 },
                 enabled = input.isNotEmpty(),
             ) {
                 Text(stringResource(R.string.draw_button))
             }
-            DrawingArea(text = drawnText, policy = drawingPolicy, enlargedText = drawnEnlarged)
+            DrawingArea(
+                text = drawnText,
+                policy = drawingPolicies[drawnPolicyIndex],
+                enlargedText = drawnEnlarged,
+            )
         }
     }
 }

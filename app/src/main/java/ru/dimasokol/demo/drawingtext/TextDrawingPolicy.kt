@@ -52,3 +52,32 @@ class DefaultDrawingPolicy : TextDrawingPolicy {
         ),
     )
 }
+
+/**
+ * A drawing policy that aims for the most aesthetically pleasing and human-friendly
+ * text layout. Implementations are expected to fine-tune wrapping, alignment, spacing
+ * and similar details so the rendered text looks as good as possible.
+ *
+ * NOTE: This is a temporary placeholder — [measure] currently matches [DefaultDrawingPolicy]
+ * exactly; the pretty layout behaviour has not been fleshed out yet.
+ */
+class PrettyDrawingPolicy : TextDrawingPolicy {
+
+    override fun measure(
+        textMeasurer: TextMeasurer,
+        text: String,
+        style: TextStyle,
+        width: Int,
+        height: Int,
+    ): TextLayoutResult = textMeasurer.measure(
+        text = AnnotatedString(text),
+        style = style,
+        overflow = TextOverflow.Clip,
+        softWrap = true,
+        maxLines = Int.MAX_VALUE,
+        constraints = Constraints(
+            maxWidth = width,
+            maxHeight = height,
+        ),
+    )
+}
