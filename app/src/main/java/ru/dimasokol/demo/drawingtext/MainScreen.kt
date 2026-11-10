@@ -43,6 +43,7 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.toSize
 import ru.dimasokol.demo.drawingtext.policies.DefaultDrawingPolicy
 import ru.dimasokol.demo.drawingtext.policies.DensityUnitsSource
 import ru.dimasokol.demo.drawingtext.policies.PrettyDrawingPolicy
@@ -176,7 +177,8 @@ private fun DrawingArea(
         fontSize = if (enlargedText) baseBodyLarge.fontSize * 1.2f else baseBodyLarge.fontSize,
     )
     val background = MaterialTheme.colorScheme.surfaceVariant
-    val shape = RoundedCornerShape(8.dp)
+    val highlight = MaterialTheme.colorScheme.inversePrimary
+    val shape = RoundedCornerShape(2.dp)
 
     Box(
         modifier = modifier
@@ -184,7 +186,7 @@ private fun DrawingArea(
             .height(DrawingAreaHeight)
             .clip(shape)
             .background(background)
-            .padding(12.dp)
+            .padding(0.dp)
             .drawWithContent {
                 drawContent()
                 if (text.isEmpty()) return@drawWithContent
@@ -199,6 +201,7 @@ private fun DrawingArea(
                     ),
                     units = DensityUnitsSource(this),
                 )
+                drawRect(highlight, size = layout.size.toSize())
                 drawText(layout, topLeft = Offset.Zero)
             },
     )
