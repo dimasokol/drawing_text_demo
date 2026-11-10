@@ -15,10 +15,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
@@ -44,6 +44,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import ru.dimasokol.demo.drawingtext.policies.DefaultDrawingPolicy
+import ru.dimasokol.demo.drawingtext.policies.DensityUnitsSource
 import ru.dimasokol.demo.drawingtext.policies.PrettyDrawingPolicy
 import ru.dimasokol.demo.drawingtext.policies.TextDrawingPolicy
 import ru.dimasokol.demo.drawingtext.ui.theme.DrawingTextTheme
@@ -118,7 +119,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
                         ExposedDropdownMenuDefaults.TrailingIcon(expanded = policyMenuExpanded)
                     },
                     modifier = Modifier
-                        .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                        .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                         .fillMaxWidth(),
                 )
                 ExposedDropdownMenu(
@@ -196,6 +197,7 @@ private fun DrawingArea(
                         maxWidth = size.width.toInt(),
                         maxHeight = size.height.toInt(),
                     ),
+                    units = DensityUnitsSource(this),
                 )
                 drawText(layout, topLeft = Offset.Zero)
             },

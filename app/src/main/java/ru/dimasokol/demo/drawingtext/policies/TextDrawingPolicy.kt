@@ -15,13 +15,15 @@ interface TextDrawingPolicy {
 
     /**
      * Measures [text] with [textMeasurer] within the given [constraints] and
-     * returns the resulting layout.
+     * returns the resulting layout. [units] gives access to Android dp/sp in pixels,
+     * so the implementation can scale its logic by the current density.
      */
     fun measure(
         textMeasurer: TextMeasurer,
         text: String,
         style: TextStyle,
         constraints: Constraints,
+        units: UnitsSource,
     ): TextLayoutResult
 }
 

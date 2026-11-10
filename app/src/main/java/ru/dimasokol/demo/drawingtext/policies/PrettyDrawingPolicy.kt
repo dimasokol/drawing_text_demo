@@ -6,11 +6,13 @@ import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
+import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
 /**
  * A drawing policy that aims for an even, pleasant text block: it varies the drawing width
- * (within the drawing area) to make the lengths of the lines as uniform as possible.
+ * (within the drawing area, stepping by whole `sp` units) to make the lengths of the lines
+ * as uniform as possible.
  *
  * Only the "interior" lines of each paragraph are taken into account — the last line of a
  * paragraph is allowed to stay short, so a short final line never spoils the uniformity of
@@ -24,6 +26,7 @@ class PrettyDrawingPolicy : TextDrawingPolicy {
         text: String,
         style: TextStyle,
         constraints: Constraints,
+        units: UnitsSource,
     ): TextLayoutResult {
         val areaWidth = constraints.maxWidth
         if (areaWidth <= 0) return measureAt(textMeasurer, text, style, areaWidth, constraints.maxHeight)
@@ -38,13 +41,15 @@ class PrettyDrawingPolicy : TextDrawingPolicy {
         var bestScore = firstMean - firstStdDev
         var bestResult = fullWidthResult
 
-        // Scan towards narrower widths, scoring uniformity of the interior lines; because we
-        // go from wide to narrow and replace only on a strictly better score, ties keep the
-        // widest layout.
-        var w = areaWidth - 1
+        // Scan towards narrower widths, shrinking by a whole sp per step and scoring the
+        // uniformity of the interior lines; because we go from wide to narrow and replace
+        // only on a strictly better score, ties keep the widest layout.
+        val stepPx = units.spToPx(1f).takeIf { it > 0f } ?: 1f
+        var w = areaWidth - stepPx
         while (w >= minWidth) {
-            val result = measureAt(textMeasurer, text, style, w, constraints.maxHeight)
-            val fills = result.interiorLineFills(text, w)
+            val wInt = w.roundToInt()
+            val result = measureAt(textMeasurer, text, style, wInt, constraints.maxHeight)
+            val fills = result.interiorLineFills(text, wInt)
             if (fills != null) {
                 val (mean, stdDev) = fills.meanStdDev()
                 val score = mean - stdDev
@@ -53,7 +58,7 @@ class PrettyDrawingPolicy : TextDrawingPolicy {
                     bestResult = result
                 }
             }
-            w--
+            w -= stepPx
         }
 
         return bestResult

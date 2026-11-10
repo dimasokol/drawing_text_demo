@@ -19,6 +19,7 @@ class DefaultDrawingPolicy : TextDrawingPolicy {
         text: String,
         style: TextStyle,
         constraints: Constraints,
+        units: UnitsSource,
     ): TextLayoutResult = textMeasurer.measure(
         text = AnnotatedString(text),
         style = style,
