@@ -6,14 +6,16 @@ import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
+import kotlin.math.sqrt
 
 /**
- * A drawing policy that aims for the most aesthetically pleasing and human-friendly
- * text layout. Implementations are expected to fine-tune wrapping, alignment, spacing
- * and similar details so the rendered text looks as good as possible.
+ * A drawing policy that aims for an even, pleasant text block: it varies the drawing width
+ * (within the drawing area) to make the lengths of the lines as uniform as possible.
  *
- * NOTE: This is a temporary placeholder — [measure] currently matches [DefaultDrawingPolicy]
- * exactly; the pretty layout behaviour has not been fleshed out yet.
+ * Only the "interior" lines of each paragraph are taken into account — the last line of a
+ * paragraph is allowed to stay short, so a short final line never spoils the uniformity of
+ * the rest. If the text is short and fits (e.g. on a single line), the result is identical
+ * to [DefaultDrawingPolicy]. The width is never reduced below 60% of the drawing-area width.
  */
 class PrettyDrawingPolicy : TextDrawingPolicy {
 
@@ -22,13 +24,95 @@ class PrettyDrawingPolicy : TextDrawingPolicy {
         text: String,
         style: TextStyle,
         constraints: Constraints,
+    ): TextLayoutResult {
+        val areaWidth = constraints.maxWidth
+        if (areaWidth <= 0) return measureAt(textMeasurer, text, style, areaWidth, constraints.maxHeight)
+        val minWidth = (areaWidth * MIN_WIDTH_RATIO).toInt()
+
+        // Baseline at the full drawing width — the same layout DefaultDrawingPolicy would give.
+        val fullWidthResult = measureAt(textMeasurer, text, style, areaWidth, constraints.maxHeight)
+        val fullWidthFills = fullWidthResult.interiorLineFills(text, areaWidth)
+        if (fullWidthFills == null) return fullWidthResult
+
+        val (firstMean, firstStdDev) = fullWidthFills.meanStdDev()
+        var bestScore = firstMean - firstStdDev
+        var bestResult = fullWidthResult
+
+        // Scan towards narrower widths, scoring uniformity of the interior lines; because we
+        // go from wide to narrow and replace only on a strictly better score, ties keep the
+        // widest layout.
+        var w = areaWidth - 1
+        while (w >= minWidth) {
+            val result = measureAt(textMeasurer, text, style, w, constraints.maxHeight)
+            val fills = result.interiorLineFills(text, w)
+            if (fills != null) {
+                val (mean, stdDev) = fills.meanStdDev()
+                val score = mean - stdDev
+                if (score > bestScore) {
+                    bestScore = score
+                    bestResult = result
+                }
+            }
+            w--
+        }
+
+        return bestResult
+    }
+
+    private fun measureAt(
+        textMeasurer: TextMeasurer,
+        text: String,
+        style: TextStyle,
+        width: Int,
+        maxHeight: Int,
     ): TextLayoutResult = textMeasurer.measure(
         text = AnnotatedString(text),
         style = style,
         overflow = TextOverflow.Clip,
         softWrap = true,
         maxLines = Int.MAX_VALUE,
-        constraints = constraints,
+        constraints = Constraints(
+            maxWidth = width,
+            maxHeight = maxHeight,
+        ),
     )
+
+    private companion object {
+        /** The narrowest candidate width is 60% of the drawing-area width. */
+        const val MIN_WIDTH_RATIO = 0.6f
+    }
 }
 
+/**
+ * Returns the fill factors (measured line width divided by [width]) of the interior lines of
+ * this layout — all lines except the last line of each paragraph. Returns `null` when there
+ * are no interior lines (single-line text or a whole layout of paragraph-final lines).
+ */
+private fun TextLayoutResult.interiorLineFills(text: String, width: Int): FloatArray? {
+    if (lineCount == 0) return null
+    val fills = ArrayList<Float>(lineCount)
+    for (i in 0 until lineCount) {
+        // The last line ends its paragraph at the end of the text; other lines are final for
+        // their paragraph when immediately followed by a newline.
+        val isParagraphFinal = i == lineCount - 1 ||
+            (getLineEnd(i) < text.length && text[getLineEnd(i)] == '\n')
+        if (isParagraphFinal) continue
+        fills.add((getLineRight(i) - getLineLeft(i)) / width)
+    }
+    return if (fills.isEmpty()) null else fills.toFloatArray()
+}
+
+/**
+ * Mean and standard deviation of this array of line fills.
+ */
+private fun FloatArray.meanStdDev(): Pair<Float, Float> {
+    var sum = 0f
+    for (value in this) sum += value
+    val mean = sum / size
+    var deviation = 0f
+    for (value in this) {
+        val delta = value - mean
+        deviation += delta * delta
+    }
+    return mean to sqrt(deviation / size)
+}
