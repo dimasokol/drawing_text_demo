@@ -47,7 +47,7 @@ import androidx.compose.ui.unit.toSize
 import ru.dimasokol.demo.drawingtext.policies.CoverageDrawingPolicy
 import ru.dimasokol.demo.drawingtext.policies.DefaultDrawingPolicy
 import ru.dimasokol.demo.drawingtext.policies.DensityUnitsSource
-import ru.dimasokol.demo.drawingtext.policies.PrettyDrawingPolicy
+import ru.dimasokol.demo.drawingtext.policies.DeviationDrawingPolicy
 import ru.dimasokol.demo.drawingtext.policies.TextDrawingPolicy
 import ru.dimasokol.demo.drawingtext.policies.TextSizeDrawingPolicy
 import ru.dimasokol.demo.drawingtext.ui.theme.DrawingTextTheme
@@ -66,7 +66,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
     val drawingPolicies = remember {
         listOf(
             DefaultDrawingPolicy(),
-            PrettyDrawingPolicy(),
+            DeviationDrawingPolicy(),
             TextSizeDrawingPolicy(),
             CoverageDrawingPolicy(),
         )

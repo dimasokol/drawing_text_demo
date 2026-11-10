@@ -1,8 +1,8 @@
-# PrettyDrawingPolicy
+# DeviationDrawingPolicy
 
 Используется определения и правила, перечисленные в [DrawingPolicy.md](./DrawingPolicy.md).
 
-Рисование в `PrettyDrawingPolicy` устроено по следующим принципам.
+Рисование в `DeviationDrawingPolicy` устроено по следующим принципам.
 
 ## Принципы
 

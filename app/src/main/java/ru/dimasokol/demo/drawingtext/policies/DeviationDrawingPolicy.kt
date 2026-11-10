@@ -18,7 +18,7 @@ import kotlin.math.roundToInt
  * the rest. If the text is short and fits (e.g. on a single line), the result is identical
  * to [DefaultDrawingPolicy]. The width is never reduced below 60% of the drawing-area width.
  */
-class PrettyDrawingPolicy : TextDrawingPolicy {
+class DeviationDrawingPolicy : TextDrawingPolicy {
 
     override fun measure(
         textMeasurer: TextMeasurer,
