@@ -7,7 +7,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import kotlin.math.roundToInt
-import kotlin.math.sqrt
 
 /**
  * A drawing policy that aims for an even, pleasant text block: it varies the drawing width
@@ -86,38 +85,4 @@ class PrettyDrawingPolicy : TextDrawingPolicy {
         /** The narrowest candidate width is 60% of the drawing-area width. */
         const val MIN_WIDTH_RATIO = 0.6f
     }
-}
-
-/**
- * Returns the fill factors (measured line width divided by [width]) of the interior lines of
- * this layout — all lines except the last line of each paragraph. Returns `null` when there
- * are no interior lines (single-line text or a whole layout of paragraph-final lines).
- */
-private fun TextLayoutResult.interiorLineFills(text: String, width: Int): FloatArray? {
-    if (lineCount == 0) return null
-    val fills = ArrayList<Float>(lineCount)
-    for (i in 0 until lineCount) {
-        // The last line ends its paragraph at the end of the text; other lines are final for
-        // their paragraph when immediately followed by a newline.
-        val isParagraphFinal = i == lineCount - 1 ||
-            (getLineEnd(i) < text.length && text[getLineEnd(i)] == '\n')
-        if (isParagraphFinal) continue
-        fills.add((getLineRight(i) - getLineLeft(i)) / width)
-    }
-    return if (fills.isEmpty()) null else fills.toFloatArray()
-}
-
-/**
- * Mean and standard deviation of this array of line fills.
- */
-private fun FloatArray.meanStdDev(): Pair<Float, Float> {
-    var sum = 0f
-    for (value in this) sum += value
-    val mean = sum / size
-    var deviation = 0f
-    for (value in this) {
-        val delta = value - mean
-        deviation += delta * delta
-    }
-    return mean to sqrt(deviation / size)
 }

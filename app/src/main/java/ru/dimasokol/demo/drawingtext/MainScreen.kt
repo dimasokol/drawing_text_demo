@@ -48,6 +48,7 @@ import ru.dimasokol.demo.drawingtext.policies.DefaultDrawingPolicy
 import ru.dimasokol.demo.drawingtext.policies.DensityUnitsSource
 import ru.dimasokol.demo.drawingtext.policies.PrettyDrawingPolicy
 import ru.dimasokol.demo.drawingtext.policies.TextDrawingPolicy
+import ru.dimasokol.demo.drawingtext.policies.TextSizeDrawingPolicy
 import ru.dimasokol.demo.drawingtext.ui.theme.DrawingTextTheme
 
 private val DrawingAreaWidth = 240.dp
@@ -61,7 +62,9 @@ fun MainScreen(modifier: Modifier = Modifier) {
     var drawnText by rememberSaveable { mutableStateOf("") }
     var enlargedText by rememberSaveable { mutableStateOf(false) }
     var drawnEnlarged by rememberSaveable { mutableStateOf(false) }
-    val drawingPolicies = remember { listOf(DefaultDrawingPolicy(), PrettyDrawingPolicy()) }
+    val drawingPolicies = remember {
+        listOf(DefaultDrawingPolicy(), PrettyDrawingPolicy(), TextSizeDrawingPolicy())
+    }
     var selectedPolicyIndex by rememberSaveable { mutableStateOf(0) }
     var drawnPolicyIndex by rememberSaveable { mutableStateOf(0) }
     var policyMenuExpanded by remember { mutableStateOf(false) }
