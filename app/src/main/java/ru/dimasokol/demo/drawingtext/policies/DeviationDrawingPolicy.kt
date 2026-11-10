@@ -6,6 +6,9 @@ import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
+import ru.dimasokol.demo.drawingtext.policies.utils.UnitsSource
+import ru.dimasokol.demo.drawingtext.policies.utils.interiorLineFills
+import ru.dimasokol.demo.drawingtext.policies.utils.meanStdDev
 import kotlin.math.roundToInt
 
 /**
@@ -18,7 +21,10 @@ import kotlin.math.roundToInt
  * the rest. If the text is short and fits (e.g. on a single line), the result is identical
  * to [DefaultDrawingPolicy]. The width is never reduced below 60% of the drawing-area width.
  */
-class DeviationDrawingPolicy : TextDrawingPolicy {
+open class DeviationDrawingPolicy : TextDrawingPolicy {
+
+    protected open val ignoreParagraphEnds
+        get() = true
 
     override fun measure(
         textMeasurer: TextMeasurer,
@@ -33,8 +39,8 @@ class DeviationDrawingPolicy : TextDrawingPolicy {
 
         // Baseline at the full drawing width — the same layout DefaultDrawingPolicy would give.
         val fullWidthResult = measureAt(textMeasurer, text, style, areaWidth, constraints.maxHeight)
-        val fullWidthFills = fullWidthResult.interiorLineFills(text, areaWidth)
-        if (fullWidthFills == null) return fullWidthResult
+        val fullWidthFills =
+            fullWidthResult.interiorLineFills(text, areaWidth, ignoreParagraphEnds) ?: return fullWidthResult
 
         val (firstMean, firstStdDev) = fullWidthFills.meanStdDev()
         var bestScore = firstMean - firstStdDev
@@ -48,7 +54,7 @@ class DeviationDrawingPolicy : TextDrawingPolicy {
         while (w >= minWidth) {
             val wInt = w.roundToInt()
             val result = measureAt(textMeasurer, text, style, wInt, constraints.maxHeight)
-            val fills = result.interiorLineFills(text, wInt)
+            val fills = result.interiorLineFills(text, wInt, ignoreParagraphEnds)
             if (fills != null) {
                 val (mean, stdDev) = fills.meanStdDev()
                 val score = mean - stdDev

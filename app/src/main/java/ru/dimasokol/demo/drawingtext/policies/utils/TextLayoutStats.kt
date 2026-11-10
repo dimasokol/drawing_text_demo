@@ -1,14 +1,17 @@
-package ru.dimasokol.demo.drawingtext.policies
+package ru.dimasokol.demo.drawingtext.policies.utils
 
 import androidx.compose.ui.text.TextLayoutResult
 import kotlin.math.sqrt
 
 /**
  * Returns the fill factors (measured line width divided by [width]) of the interior lines of
- * this layout — all lines except the last line of each paragraph. Returns `null` when there
- * are no interior lines (single-line text or a whole layout of paragraph-final lines).
+ * this layout — all lines except the last line of each paragraph, if [ignoreParagraphEnds] is set.
+ * Returns `null` when there are no interior lines (single-line text or a whole layout of
+ * paragraph-final lines).
  */
-internal fun TextLayoutResult.interiorLineFills(text: String, width: Int): FloatArray? {
+internal fun TextLayoutResult.interiorLineFills(
+    text: String, width: Int, ignoreParagraphEnds: Boolean = true
+): FloatArray? {
     if (lineCount == 0) return null
     val fills = ArrayList<Float>(lineCount)
     for (i in 0 until lineCount) {
@@ -16,7 +19,7 @@ internal fun TextLayoutResult.interiorLineFills(text: String, width: Int): Float
         // their paragraph when immediately followed by a newline.
         val isParagraphFinal = i == lineCount - 1 ||
             (getLineEnd(i) < text.length && text[getLineEnd(i)] == '\n')
-        if (isParagraphFinal) continue
+        if (isParagraphFinal && ignoreParagraphEnds) continue
         fills.add((getLineRight(i) - getLineLeft(i)) / width)
     }
     return if (fills.isEmpty()) null else fills.toFloatArray()

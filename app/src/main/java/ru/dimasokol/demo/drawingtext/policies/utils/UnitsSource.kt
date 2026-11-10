@@ -1,4 +1,4 @@
-package ru.dimasokol.demo.drawingtext.policies
+package ru.dimasokol.demo.drawingtext.policies.utils
 
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp

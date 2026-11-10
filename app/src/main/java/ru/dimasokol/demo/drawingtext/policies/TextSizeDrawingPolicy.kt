@@ -9,6 +9,8 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.isSpecified
 import androidx.compose.ui.unit.sp
+import ru.dimasokol.demo.drawingtext.policies.utils.UnitsSource
+import ru.dimasokol.demo.drawingtext.policies.utils.coverage
 
 /**
  * A drawing policy that enlarges the font (by whole `sp` steps) to fill as much of the

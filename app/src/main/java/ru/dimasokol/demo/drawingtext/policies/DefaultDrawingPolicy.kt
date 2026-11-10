@@ -6,6 +6,7 @@ import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
+import ru.dimasokol.demo.drawingtext.policies.utils.UnitsSource
 
 /**
  * The default layout policy: wraps text to the canvas width and clips anything that
