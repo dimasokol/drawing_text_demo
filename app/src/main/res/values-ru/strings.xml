@@ -8,4 +8,11 @@
     <string name="text_size_normal">Обычный</string>
     <string name="text_size_large">Увеличенный</string>
     <string name="drawing_policy_label">Политика отрисовки</string>
+    <string name="info_button">Инфо</string>
+    <string name="ok">ОК</string>
+    <string name="policy_default_description">Переносит текст по ширине области без попыток улучшить его внешний вид. Базовое поведение.</string>
+    <string name="policy_deviation_description">Изменяет ширину рисования (с шагом 1sp, не уже 60% области), чтобы длины строк были максимально однообразными — оценка по среднеквадратичному отклонению. Последняя строка абзаца может оставаться короткой.</string>
+    <string name="policy_ft_deviation_description">Как и политика отклонений DeviationDrawingPolicy, но оценивает все строки, включая последние строки абзацев.</string>
+    <string name="policy_text_size_description">Увеличивает размер шрифта с шагом 1sp — до +50% от исходного — чтобы максимально заполнить область рисования без переполнения.</string>
+    <string name="policy_coverage_description">Изменяет ширину рисования, чтобы прямоугольники строк занимали максимум площади bounding-box самого результата; ширина не опускается ниже 60% области.</string>
 </resources>

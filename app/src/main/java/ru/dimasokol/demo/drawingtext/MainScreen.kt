@@ -1,9 +1,11 @@
 package ru.dimasokol.demo.drawingtext
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -12,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,12 +22,14 @@ import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -76,6 +81,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
     var selectedPolicyIndex by rememberSaveable { mutableStateOf(0) }
     var drawnPolicyIndex by rememberSaveable { mutableStateOf(0) }
     var policyMenuExpanded by remember { mutableStateOf(false) }
+    var showPolicyInfo by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -149,15 +155,41 @@ fun MainScreen(modifier: Modifier = Modifier) {
                     }
                 }
             }
-            Button(
-                onClick = {
-                    drawnText = input
-                    drawnEnlarged = enlargedText
-                    drawnPolicyIndex = selectedPolicyIndex
-                },
-                enabled = input.isNotEmpty(),
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Text(stringResource(R.string.draw_button))
+                Button(
+                    onClick = {
+                        drawnText = input
+                        drawnEnlarged = enlargedText
+                        drawnPolicyIndex = selectedPolicyIndex
+                    },
+                    enabled = input.isNotEmpty(),
+                    modifier = Modifier.weight(1f),
+                ) {
+                    Text(stringResource(R.string.draw_button))
+                }
+                OutlinedButton(
+                    onClick = { showPolicyInfo = true },
+                ) {
+                    Text(stringResource(R.string.info_button))
+                }
+            }
+            if (showPolicyInfo) {
+                val selectedPolicy = drawingPolicies[selectedPolicyIndex]
+                AlertDialog(
+                    onDismissRequest = { showPolicyInfo = false },
+                    title = { Text(selectedPolicy.javaClass.simpleName) },
+                    text = {
+                        Text(text = stringResource(policyDescriptionRes(selectedPolicy)))
+                    },
+                    confirmButton = {
+                        TextButton(onClick = { showPolicyInfo = false }) {
+                            Text(stringResource(R.string.ok))
+                        }
+                    },
+                )
             }
             DrawingArea(
                 text = drawnText,
@@ -166,6 +198,19 @@ fun MainScreen(modifier: Modifier = Modifier) {
             )
         }
     }
+}
+
+/**
+ * The [string resource][StringRes] describing [policy] for the Info dialog.
+ */
+@StringRes
+private fun policyDescriptionRes(policy: TextDrawingPolicy): Int = when (policy) {
+    is DefaultDrawingPolicy -> R.string.policy_default_description
+    is FTDeviationDrawingPolicy -> R.string.policy_ft_deviation_description
+    is DeviationDrawingPolicy -> R.string.policy_deviation_description
+    is TextSizeDrawingPolicy -> R.string.policy_text_size_description
+    is CoverageDrawingPolicy -> R.string.policy_coverage_description
+    else -> R.string.policy_default_description
 }
 
 /**
