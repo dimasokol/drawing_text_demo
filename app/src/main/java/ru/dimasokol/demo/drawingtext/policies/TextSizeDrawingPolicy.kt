@@ -32,7 +32,6 @@ class TextSizeDrawingPolicy : TextDrawingPolicy {
 
         // Baseline measurement with the font as-is — same as DefaultDrawingPolicy.
         val baseline = measureAt(textMeasurer, text, style, constraints)
-        if (baseline.lineCount <= 1) return baseline
 
         val baseFontSize = if (style.fontSize.isSpecified) style.fontSize.value else 0f
         if (baseFontSize <= 0f) return baseline
