@@ -44,6 +44,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
+import ru.dimasokol.demo.drawingtext.policies.CoverageDrawingPolicy
 import ru.dimasokol.demo.drawingtext.policies.DefaultDrawingPolicy
 import ru.dimasokol.demo.drawingtext.policies.DensityUnitsSource
 import ru.dimasokol.demo.drawingtext.policies.PrettyDrawingPolicy
@@ -63,7 +64,12 @@ fun MainScreen(modifier: Modifier = Modifier) {
     var enlargedText by rememberSaveable { mutableStateOf(false) }
     var drawnEnlarged by rememberSaveable { mutableStateOf(false) }
     val drawingPolicies = remember {
-        listOf(DefaultDrawingPolicy(), PrettyDrawingPolicy(), TextSizeDrawingPolicy())
+        listOf(
+            DefaultDrawingPolicy(),
+            PrettyDrawingPolicy(),
+            TextSizeDrawingPolicy(),
+            CoverageDrawingPolicy(),
+        )
     }
     var selectedPolicyIndex by rememberSaveable { mutableStateOf(0) }
     var drawnPolicyIndex by rememberSaveable { mutableStateOf(0) }

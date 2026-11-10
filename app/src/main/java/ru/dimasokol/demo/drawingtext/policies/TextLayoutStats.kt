@@ -52,3 +52,11 @@ internal fun TextLayoutResult.coverage(areaWidth: Int, areaHeight: Int): Float {
     }
     return covered / (areaWidth * areaHeight)
 }
+
+/**
+ * The share of this layout's own bounding rectangle (its `size`) covered by its line
+ * rectangles. Unlike [coverage], the denominator is the result's bounding box rather than the
+ * available drawing area.
+ */
+internal fun TextLayoutResult.boundingBoxCoverage(): Float =
+    coverage(size.width, size.height)
