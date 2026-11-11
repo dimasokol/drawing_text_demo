@@ -22,6 +22,7 @@ import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -42,9 +43,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
@@ -82,6 +85,8 @@ fun MainScreen(modifier: Modifier = Modifier) {
     var drawnPolicyIndex by rememberSaveable { mutableStateOf(0) }
     var policyMenuExpanded by remember { mutableStateOf(false) }
     var showPolicyInfo by remember { mutableStateOf(false) }
+    var showPresetsSheet by remember { mutableStateOf(false) }
+    val presetTexts = stringArrayResource(R.array.preset_texts)
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -105,6 +110,12 @@ fun MainScreen(modifier: Modifier = Modifier) {
                     .fillMaxWidth()
                     .height(120.dp),
             )
+            OutlinedButton(
+                onClick = { showPresetsSheet = true },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(stringResource(R.string.presets_button))
+            }
             SingleChoiceSegmentedButtonRow(
                 modifier = Modifier.fillMaxWidth(),
             ) {
@@ -190,6 +201,35 @@ fun MainScreen(modifier: Modifier = Modifier) {
                         }
                     },
                 )
+            }
+            if (showPresetsSheet) {
+                ModalBottomSheet(
+                    onDismissRequest = { showPresetsSheet = false },
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .verticalScroll(rememberScrollState())
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        presetTexts.forEach { preset ->
+                            TextButton(
+                                onClick = {
+                                    input = preset
+                                    showPresetsSheet = false
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                            ) {
+                                Text(
+                                    text = preset,
+                                    maxLines = 3,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                            }
+                        }
+                    }
+                }
             }
             DrawingArea(
                 text = drawnText,

@@ -9,6 +9,14 @@
     <string name="drawing_policy_label">Drawing policy</string>
     <string name="info_button">Info</string>
     <string name="ok">OK</string>
+    <string name="presets_button">Presets</string>
+    <string-array name="preset_texts">
+        <item>The early morning light poured through the window while the kettle began to hum softly on the stove and the cat stretched lazily across the warm wooden floor.</item>
+        <item>When nobody expects it, small ideas gather in strange combinations and suddenly turn into something far bigger than the sum of their quiet parts.</item>
+        <item>Walking through the old market square, she noticed the faded signs, tasted fresh bread, and listened to the city waking up around her.</item>
+        <item>A good routine does not fight the day; it flows with it, adapting to every change, leaving enough room for surprises and small joys.</item>
+        <item>Fog rolling in from the sea, the hills disappeared behind a curtain of grey while the lighthouse blinked slowly through the damp morning air.</item>
+    </string-array>
     <string name="policy_default_description">Wraps text to the drawing width without trying to improve its appearance.</string>
     <string name="policy_deviation_description">Varies the drawing width (in whole sp, down to 60% of the area) to make line lengths as even as possible, judged by their standard deviation. The last line of every paragraph is allowed to stay short.</string>
     <string name="policy_ft_deviation_description">The deviation policy, as DeviationDrawingPolicy, but scoring every line — including the last lines of paragraphs.</string>
