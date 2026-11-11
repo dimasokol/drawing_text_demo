@@ -1,0 +1,40 @@
+name: Build APK
+
+permissions:
+  contents: write        # нужно, чтобы создавать Release и прикладывать asset
+
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17 (Gradle launcher)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Android SDK (install platform for compileSdk 37)
+        uses: android-actions/setup-android@v3
+      - run: sdkmanager --install "platforms;android-37" || true   # AGP может скачать сам
+
+      - name: Build debug APK
+        run: |
+          chmod +x gradlew
+          ./gradlew :app:assembleDebug --no-daemon
+
+      - name: Rename APK with version
+        run: |
+          mkdir -p apk
+          cp app/build/outputs/apk/debug/app-debug.apk apk/drawing-text-demo-${{ github.ref_name }}.apk
+
+      - name: Attach APK to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: apk/drawing-text-demo-${{ github.ref_name }}.apk
