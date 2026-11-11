@@ -16,10 +16,11 @@
         <item>Walking through the old market square, she noticed the faded signs, tasted fresh bread, and listened to the city waking up around her.</item>
         <item>A good routine does not fight the day; it flows with it, adapting to every change, leaving enough room for surprises and small joys.</item>
         <item>Fog rolling in from the sea, the hills disappeared behind a curtain of grey while the lighthouse blinked slowly through the damp morning air.</item>
+        <item>Technology moves forward in quiet steps, because each improvement builds on the one before it, and what once seemed impossible gradually becomes ordinary. Progress is best measured by the small comforts it brings, the seconds it saves, and the freedom it grants us to focus on what truly matters in work and in the moments we share.</item>
     </string-array>
     <string name="policy_default_description">Wraps text to the drawing width without trying to improve its appearance.</string>
     <string name="policy_deviation_description">Varies the drawing width (in whole sp, down to 60% of the area) to make line lengths as even as possible, judged by their standard deviation. The last line of every paragraph is allowed to stay short.</string>
     <string name="policy_ft_deviation_description">The deviation policy, as DeviationDrawingPolicy, but scoring every line — including the last lines of paragraphs.</string>
-    <string name="policy_text_size_description">Enlarges the font in 1sp steps, up to +50% of the original size, to fill the drawing area as much as possible without overflowing it.</string>
+    <string name="policy_text_size_description">Sizes the font in 1sp steps to fill the drawing area as much as possible without overflowing it: enlarges it up to +50% when the text fits, and shrinks it down to 20% when it overflows.</string>
     <string name="policy_coverage_description">Varies the drawing width so the line rectangles cover the largest share of the result\'s own bounding box, never going below 60% of the drawing area.</string>
 </resources>
