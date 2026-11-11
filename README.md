@@ -25,6 +25,10 @@
 будет размещаться текст. После размещения текст будет подсвечен прямоугольником другого цвета:
 это реальная вычисленная область.
 
+### Политики рисования
+
+Основные политики рисования сгенерированы на основе описаний, расположенных в `docs`.
+
 ## English
 
 A demo application for drawing text.
@@ -46,3 +50,7 @@ selected policy, or the draw button to check the result.
 The grey rectangle at the bottom is the nominal maximum drawing area in which the text will be
 placed. Once placed, the text is highlighted with a rectangle of a different color: that is
 the actual computed area.
+
+### Drawing policies
+
+The main drawing policies are generated based on the descriptions located in `docs`.
