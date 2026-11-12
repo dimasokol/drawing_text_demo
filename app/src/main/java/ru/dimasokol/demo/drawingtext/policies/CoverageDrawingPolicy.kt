@@ -17,7 +17,8 @@ import kotlin.math.roundToInt
  * own bounding box, not to the drawing area.
  *
  * If the text is short and fits entirely on one line, the result is identical to
- * [DefaultDrawingPolicy]. Layouts that overflow the drawing area are rejected.
+ * [DefaultDrawingPolicy]. The width is never reduced below 60% of the drawing-area width, and
+ * the scan stops as soon as the measured result overflows the drawing area (hasVisualOverflow).
  */
 class CoverageDrawingPolicy : TextDrawingPolicy {
 
@@ -46,7 +47,11 @@ class CoverageDrawingPolicy : TextDrawingPolicy {
         while (w >= minWidth) {
             val wInt = w.roundToInt()
             val result = measureAt(textMeasurer, text, style, wInt, constraints.maxHeight)
-            if (!result.hasVisualOverflow) {
+            // hasVisualOverflow already covers the height (and an unbreakable line); narrower
+            // widths only make the text taller, so there is no point scanning further.
+            if (result.hasVisualOverflow) {
+                break
+            } else {
                 val coverage = result.boundingBoxCoverage()
                 if (coverage > bestCoverage) {
                     bestCoverage = coverage

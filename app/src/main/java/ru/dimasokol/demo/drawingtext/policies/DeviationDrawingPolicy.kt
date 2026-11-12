@@ -19,7 +19,8 @@ import kotlin.math.roundToInt
  * Only the "interior" lines of each paragraph are taken into account — the last line of a
  * paragraph is allowed to stay short, so a short final line never spoils the uniformity of
  * the rest. If the text is short and fits (e.g. on a single line), the result is identical
- * to [DefaultDrawingPolicy]. The width is never reduced below 60% of the drawing-area width.
+ * to [DefaultDrawingPolicy]. The width is never reduced below 60% of the drawing-area width,
+ * and the scan stops as soon as the measured result's height exceeds the drawing area.
  */
 open class DeviationDrawingPolicy : TextDrawingPolicy {
 
@@ -54,6 +55,10 @@ open class DeviationDrawingPolicy : TextDrawingPolicy {
         while (w >= minWidth) {
             val wInt = w.roundToInt()
             val result = measureAt(textMeasurer, text, style, wInt, constraints.maxHeight)
+            // Narrower widths only make the text taller, so once the result's height exceeds
+            // the drawing area, there is no point scanning further.
+            if (result.didOverflowHeight) break
+
             val fills = result.interiorLineFills(text, wInt, ignoreParagraphEnds)
             if (fills != null) {
                 val (mean, stdDev) = fills.meanStdDev()
