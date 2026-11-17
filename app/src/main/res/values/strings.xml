@@ -7,6 +7,8 @@
     <string name="text_size_normal">Normal</string>
     <string name="text_size_large">Enlarged</string>
     <string name="drawing_policy_label">Drawing policy</string>
+    <string name="variator_label">Variator</string>
+    <string name="estimator_label">Estimator</string>
     <string name="info_button">Info</string>
     <string name="ok">OK</string>
     <string name="presets_button">Presets</string>
@@ -18,9 +20,28 @@
         <item>Fog rolling in from the sea, the hills disappeared behind a curtain of grey while the lighthouse blinked slowly through the damp morning air.</item>
         <item>Technology moves forward in quiet steps, because each improvement builds on the one before it, and what once seemed impossible gradually becomes ordinary. Progress is best measured by the small comforts it brings, the seconds it saves, and the freedom it grants us to focus on what truly matters in work and in the moments we share.</item>
     </string-array>
-    <string name="policy_default_description">Wraps text to the drawing width without trying to improve its appearance.</string>
-    <string name="policy_deviation_description">Varies the drawing width (in whole sp, down to 60% of the area) to make line lengths as even as possible, judged by their standard deviation. The last line of every paragraph is allowed to stay short.</string>
-    <string name="policy_ft_deviation_description">The deviation policy, as DeviationDrawingPolicy, but scoring every line — including the last lines of paragraphs.</string>
-    <string name="policy_text_size_description">Sizes the font in 1sp steps to fill the drawing area as much as possible without overflowing it: enlarges it up to +50% when the text fits, and shrinks it down to 20% when it overflows.</string>
-    <string name="policy_coverage_description">Varies the drawing width so the line rectangles cover the largest share of the result\'s own bounding box, never going below 60% of the drawing area.</string>
+
+    <string name="variator_noop_ui_name">Don\'t change (NoOp)</string>
+    <string name="variator_downsize_ui_name">Shrink width</string>
+    <string name="variator_font_ui_name">Change font size</string>
+    <string name="variator_error_ui">(ERROR)</string>
+
+    <string name="variator_noop_ui_help">Just wraps text to the drawing width without trying to improve its appearance (default reference behavior)</string>
+    <string name="variator_downsize_ui_help">Shrinks width (up to 60%) to find best layout</string>
+    <string name="variator_font_ui_help">Increases or decreases font size (up to 30%) to find best layout</string>
+
+    <string name="estimator_area_coverage_ui_name">Full area coverage</string>
+    <string name="estimator_local_coverage_ui_name">Text bounds coverage</string>
+    <string name="estimator_full_deviation_ui_name">Std. deviation: full-text</string>
+    <string name="estimator_paragraph_deviation_ui_name">Std. deviation: w/o last lines</string>
+    <string name="estimator_error_ui">(ERROR)</string>
+
+    <string name="estimator_area_coverage_ui_help">Text should cover max possible % of full drawing area</string>
+    <string name="estimator_local_coverage_ui_help">Text should cover max possible % of its own bounding box</string>
+    <string name="estimator_full_deviation_ui_help">Standard deviation algorithm, applied to full text (all lines)</string>
+    <string name="estimator_paragraph_deviation_ui_help">Standard deviation algorithm, skipping last line of every paragraph</string>
+
+    <string name="info_dialog_title">Current setup</string>
+
+    <string name="help_format" translatable="false">%1$s\n%2$s\n\n%3$s\n%4$s</string>
 </resources>

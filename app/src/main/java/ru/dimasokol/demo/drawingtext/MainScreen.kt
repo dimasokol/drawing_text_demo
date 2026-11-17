@@ -1,6 +1,5 @@
 package ru.dimasokol.demo.drawingtext
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -52,18 +51,29 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
-import ru.dimasokol.demo.drawingtext.policies.CoverageDrawingPolicy
-import ru.dimasokol.demo.drawingtext.policies.DefaultDrawingPolicy
+import ru.dimasokol.demo.drawingtext.policies.TopScoreTextDrawingPolicy
+import ru.dimasokol.demo.drawingtext.policies.estimation.AreaCoverageEstimator
+import ru.dimasokol.demo.drawingtext.policies.estimation.Estimator
+import ru.dimasokol.demo.drawingtext.policies.estimation.FirstLinesDeviationEstimator
+import ru.dimasokol.demo.drawingtext.policies.estimation.FullTextDeviationEstimator
+import ru.dimasokol.demo.drawingtext.policies.estimation.LocalCoverageEstimator
 import ru.dimasokol.demo.drawingtext.policies.utils.DensityUnitsSource
-import ru.dimasokol.demo.drawingtext.policies.DeviationDrawingPolicy
-import ru.dimasokol.demo.drawingtext.policies.FTDeviationDrawingPolicy
-import ru.dimasokol.demo.drawingtext.policies.TextDrawingPolicy
-import ru.dimasokol.demo.drawingtext.policies.TextSizeDrawingPolicy
+import ru.dimasokol.demo.drawingtext.policies.variation.FontSizeVariator
+import ru.dimasokol.demo.drawingtext.policies.variation.NoOpVariator
+import ru.dimasokol.demo.drawingtext.policies.variation.ShrinkWidthVariator
+import ru.dimasokol.demo.drawingtext.policies.variation.Variator
 import ru.dimasokol.demo.drawingtext.ui.theme.DrawingTextTheme
 
-private val DrawingAreaWidth = 240.dp
+private val DrawingAreaWidth = 280.dp
 private val DrawingAreaHeight = 240.dp
 
+/**
+ * The demo screen: type text (or pick a preset), choose a [Variator] and an [Estimator] and an
+ * optional enlargement, then press Draw to lay the text out into the drawing area and see its
+ * computed bounds. Press Info for a help dialog about the selected variator and estimator.
+ *
+ * @param modifier applied to the screen root.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
@@ -72,18 +82,27 @@ fun MainScreen(modifier: Modifier = Modifier) {
     var drawnText by rememberSaveable { mutableStateOf("") }
     var enlargedText by rememberSaveable { mutableStateOf(false) }
     var drawnEnlarged by rememberSaveable { mutableStateOf(false) }
-    val drawingPolicies = remember {
+    val variators = remember {
         listOf(
-            DefaultDrawingPolicy(),
-            DeviationDrawingPolicy(),
-            FTDeviationDrawingPolicy(),
-            TextSizeDrawingPolicy(),
-            CoverageDrawingPolicy(),
+            NoOpVariator(),
+            ShrinkWidthVariator(),
+            FontSizeVariator()
         )
     }
-    var selectedPolicyIndex by rememberSaveable { mutableStateOf(0) }
-    var drawnPolicyIndex by rememberSaveable { mutableStateOf(0) }
-    var policyMenuExpanded by remember { mutableStateOf(false) }
+    val estimators = remember {
+        listOf(
+            AreaCoverageEstimator(),
+            LocalCoverageEstimator(),
+            FullTextDeviationEstimator(),
+            FirstLinesDeviationEstimator()
+        )
+    }
+    var selectedVariatorIndex by rememberSaveable { mutableStateOf(0) }
+    var selectedEstimatorIndex by rememberSaveable { mutableStateOf(0) }
+    var drawnVariatorIndex by rememberSaveable { mutableStateOf(0) }
+    var drawnEstimatorIndex by rememberSaveable { mutableStateOf(0) }
+    var variatorMenuExpanded by remember { mutableStateOf(false) }
+    var estimatorMenuExpanded by remember { mutableStateOf(false) }
     var showPolicyInfo by remember { mutableStateOf(false) }
     var showPresetsSheet by remember { mutableStateOf(false) }
     val presetTexts = stringArrayResource(R.array.preset_texts)
@@ -134,38 +153,73 @@ fun MainScreen(modifier: Modifier = Modifier) {
                     Text(stringResource(R.string.text_size_large))
                 }
             }
+
             ExposedDropdownMenuBox(
-                expanded = policyMenuExpanded,
-                onExpandedChange = { policyMenuExpanded = !policyMenuExpanded },
+                expanded = variatorMenuExpanded,
+                onExpandedChange = { variatorMenuExpanded = !variatorMenuExpanded },
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 TextField(
-                    value = drawingPolicies[selectedPolicyIndex].javaClass.simpleName,
+                    value = stringResource(variators[selectedVariatorIndex].uiName()),
                     onValueChange = {},
                     readOnly = true,
-                    label = { Text(stringResource(R.string.drawing_policy_label)) },
+                    label = { Text(stringResource(R.string.variator_label)) },
                     trailingIcon = {
-                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = policyMenuExpanded)
+                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = variatorMenuExpanded)
                     },
                     modifier = Modifier
                         .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                         .fillMaxWidth(),
                 )
                 ExposedDropdownMenu(
-                    expanded = policyMenuExpanded,
-                    onDismissRequest = { policyMenuExpanded = false },
+                    expanded = variatorMenuExpanded,
+                    onDismissRequest = { variatorMenuExpanded = false },
                 ) {
-                    drawingPolicies.forEachIndexed { index, policy ->
+                    variators.forEachIndexed { index, variator ->
                         DropdownMenuItem(
-                            text = { Text(policy.javaClass.simpleName) },
+                            text = { Text(stringResource(variator.uiName())) },
                             onClick = {
-                                selectedPolicyIndex = index
-                                policyMenuExpanded = false
+                                selectedVariatorIndex = index
+                                variatorMenuExpanded = false
                             },
                         )
                     }
                 }
             }
+
+            ExposedDropdownMenuBox(
+                expanded = estimatorMenuExpanded,
+                onExpandedChange = { estimatorMenuExpanded = !estimatorMenuExpanded },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                TextField(
+                    value = stringResource(estimators[selectedEstimatorIndex].uiName()),
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text(stringResource(R.string.estimator_label)) },
+                    trailingIcon = {
+                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = estimatorMenuExpanded)
+                    },
+                    modifier = Modifier
+                        .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                        .fillMaxWidth(),
+                )
+                ExposedDropdownMenu(
+                    expanded = estimatorMenuExpanded,
+                    onDismissRequest = { estimatorMenuExpanded = false },
+                ) {
+                    estimators.forEachIndexed { index, estimator ->
+                        DropdownMenuItem(
+                            text = { Text(stringResource(estimator.uiName())) },
+                            onClick = {
+                                selectedEstimatorIndex = index
+                                estimatorMenuExpanded = false
+                            },
+                        )
+                    }
+                }
+            }
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -174,7 +228,8 @@ fun MainScreen(modifier: Modifier = Modifier) {
                     onClick = {
                         drawnText = input
                         drawnEnlarged = enlargedText
-                        drawnPolicyIndex = selectedPolicyIndex
+                        drawnVariatorIndex = selectedVariatorIndex
+                        drawnEstimatorIndex = selectedEstimatorIndex
                     },
                     enabled = input.isNotEmpty(),
                     modifier = Modifier.weight(1f),
@@ -188,12 +243,21 @@ fun MainScreen(modifier: Modifier = Modifier) {
                 }
             }
             if (showPolicyInfo) {
-                val selectedPolicy = drawingPolicies[selectedPolicyIndex]
+                val selectedVariator = variators[selectedVariatorIndex]
+                val selectedEstimator = estimators[selectedEstimatorIndex]
                 AlertDialog(
                     onDismissRequest = { showPolicyInfo = false },
-                    title = { Text(selectedPolicy.javaClass.simpleName) },
+                    title = { Text(stringResource(R.string.info_dialog_title)) },
                     text = {
-                        Text(text = stringResource(policyDescriptionRes(selectedPolicy)))
+                        Text(text =
+                            stringResource(
+                                R.string.help_format,
+                                selectedVariator::class.simpleName!!,
+                                stringResource(selectedVariator.uiHelp()),
+                                selectedEstimator::class.simpleName!!,
+                                stringResource(selectedEstimator.uiHelp())
+                                )
+                        )
                     },
                     confirmButton = {
                         TextButton(onClick = { showPolicyInfo = false }) {
@@ -233,36 +297,30 @@ fun MainScreen(modifier: Modifier = Modifier) {
             }
             DrawingArea(
                 text = drawnText,
-                policy = drawingPolicies[drawnPolicyIndex],
-                enlargedText = drawnEnlarged,
+                variator = variators[drawnVariatorIndex],
+                estimator = estimators[drawnEstimatorIndex],
+                enlargedText = drawnEnlarged
             )
         }
     }
 }
 
 /**
- * The [string resource][StringRes] describing [policy] for the Info dialog.
- */
-@StringRes
-private fun policyDescriptionRes(policy: TextDrawingPolicy): Int = when (policy) {
-    is DefaultDrawingPolicy -> R.string.policy_default_description
-    is FTDeviationDrawingPolicy -> R.string.policy_ft_deviation_description
-    is DeviationDrawingPolicy -> R.string.policy_deviation_description
-    is TextSizeDrawingPolicy -> R.string.policy_text_size_description
-    is CoverageDrawingPolicy -> R.string.policy_coverage_description
-    else -> R.string.policy_default_description
-}
-
-/**
- * Draws [text] directly into the canvas — no [Text] composable involved.
+ * Draws [text] directly into the canvas, without a [Text] composable. The text is laid out
+ * through [TopScoreTextDrawingPolicy] driven by the selected [variator] and scored by
+ * [estimator]; the bounding box of the chosen layout is highlighted before the text is drawn.
  *
- * The text is measured against the canvas width, so it wraps the same way a TextView would;
- * anything that does not fit vertically is clipped by the rounded box.
+ * @param text the text to draw.
+ * @param variator produces the layout variations (e.g. shrinking the width, changing font size).
+ * @param estimator scores each produced layout, deciding which one is considered the result.
+ * @param enlargedText whether to draw the text enlarged (1.2x font).
+ * @param modifier applied to the drawing box.
  */
 @Composable
 private fun DrawingArea(
     text: String,
-    policy: TextDrawingPolicy,
+    variator: Variator,
+    estimator: Estimator,
     enlargedText: Boolean,
     modifier: Modifier = Modifier,
 ) {
@@ -276,6 +334,8 @@ private fun DrawingArea(
     val highlight = MaterialTheme.colorScheme.inversePrimary
     val shape = RoundedCornerShape(2.dp)
 
+    val combinedPolicy = TopScoreTextDrawingPolicy(variator, estimator)
+
     Box(
         modifier = modifier
             .width(DrawingAreaWidth)
@@ -287,7 +347,7 @@ private fun DrawingArea(
                 drawContent()
                 if (text.isEmpty()) return@drawWithContent
 
-                val layout = policy.measure(
+                val layout = combinedPolicy.measure(
                     textMeasurer = textMeasurer,
                     text = text,
                     style = textStyle,

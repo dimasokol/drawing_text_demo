@@ -4,24 +4,43 @@
     <string name="main_screen_title">Демо текста</string>
     <string name="text_to_draw_label">Текст для отрисовки:</string>
     <string name="draw_button">Рисуй!</string>
-    <string name="default_text">Здесь текст, который будет отрисован. Интеллигенция, интерференция и юриспруденция. Перепишите его, нажмите кнопку «Заготовки», или просто смотрите результат.</string>
+    <string name="default_text">Здесь текст, который будет отрисован. Плохо нарисованный текст смотрится непрофессионально. Он неприятен, хотя человек не понимает даже, что ж ему тут конкретно не нравится.</string>
     <string name="text_size_normal">Обычный</string>
     <string name="text_size_large">Увеличенный</string>
     <string name="drawing_policy_label">Политика отрисовки</string>
+    <string name="variator_label">Вариатор</string>
+    <string name="estimator_label">Оценочная функция</string>
     <string name="info_button">Инфо</string>
     <string name="ok">ОК</string>
     <string name="presets_button">Заготовки</string>
     <string-array name="preset_texts">
-        <item>Ранний утренний свет заливал комнату сквозь окно, пока чайник тихо начинал петь на плите, а кот неторопливо потягивался на тёплом деревянном полу.</item>
-        <item>Плохо нарисованный текст смотрится непрофессионально. Он неприятен, хотя человек не понимает даже, что ж ему тут конкретно не нравится. </item>
+        <item>Плохо нарисованный текст смотрится непрофессионально. Он неприятен, хотя человек не понимает даже, что ж ему тут конкретно не нравится.</item>
+        <item>Ранний утренний свет заливал комнату сквозь окно, пока чайник тихо начинал петь на плите.\n\nКот неторопливо потягивался на тёплом деревянном полу, катая лапами клубок синих ниток.</item>
         <item>На моих глазах произошло следующее возмутительное происшествие, рисующее яркими красками наши железнодорожные порядки</item>
         <item>Сейчас в Комсомольске‑на‑Амуре проживает 230 тысяч человек. Хороший распорядок не борется с днём, а течёт вместе с ним.</item>
         <item>В прибрежном лесу капли дождя стучали по широким листьям, а тропинка из мягкого мха вилась между древними деревьями к скрытой за туманом бухте.</item>
         <item>Технология движется вперёд тихими шагами: каждое улучшение строится на предыдущем, и то, что когда-то казалось невозможным, постепенно становится обыденным. Прогресс лучше всего измерять теми мелочами, что он приносит, секундами, которые экономит, и свободой сосредоточиться на том, что действительно важно в работе и в мгновениях, которые мы делим друг с другом.</item>
     </string-array>
-    <string name="policy_default_description">Переносит текст по ширине области без попыток улучшить его внешний вид. Базовое поведение.</string>
-    <string name="policy_deviation_description">Изменяет ширину рисования (с шагом 1sp, не уже 60% области), чтобы длины строк были максимально однообразными — оценка по среднеквадратичному отклонению. Последняя строка абзаца может оставаться короткой.</string>
-    <string name="policy_ft_deviation_description">Как и политика отклонений DeviationDrawingPolicy, но оценивает все строки, включая последние строки абзацев.</string>
-    <string name="policy_text_size_description">Подбирает размер шрифта с шагом 1sp, чтобы максимально заполнить область рисования без переполнения: увеличивает до +50%, когда текст помещается, и уменьшает до 20% от исходного, когда он не помещается.</string>
-    <string name="policy_coverage_description">Изменяет ширину рисования, чтобы прямоугольники строк занимали максимум площади bounding-box самого результата; ширина не опускается ниже 60% области.</string>
+
+    <string name="variator_noop_ui_name">Ничего не делать (NoOp)</string>
+    <string name="variator_downsize_ui_name">Сжать по ширине (ShrinkWidth)</string>
+    <string name="variator_font_ui_name">Размер шрифта (FontSize)</string>
+    <string name="variator_error_ui">(ERROR)</string>
+
+    <string name="variator_noop_ui_help">Просто рисует текст по умолчанию (стандартное референсное поведение)</string>
+    <string name="variator_downsize_ui_help">Сжимает ширину области (до 60%) в поисках наилучшей раскладки</string>
+    <string name="variator_font_ui_help">Увеличивает или уменьшает размер шрифта (до 30%) в поисках наилучшей раскладки</string>
+
+    <string name="estimator_area_coverage_ui_name">Покрытие области (AreaCoverage)</string>
+    <string name="estimator_local_coverage_ui_name">Покрытие границ текста (LocalCoverage)</string>
+    <string name="estimator_full_deviation_ui_name">Отклонение: весь текст (FullTextDeviation)</string>
+    <string name="estimator_paragraph_deviation_ui_name">Отклонение: кроме последних (FirstLinesDeviation)</string>
+    <string name="estimator_error_ui">(ERROR)</string>
+
+    <string name="estimator_area_coverage_ui_help">Текст должен покрыть максимум площади всей области рисования</string>
+    <string name="estimator_local_coverage_ui_help">Текст должен покрыть максимум площади прямоугольника, в который он вписан</string>
+    <string name="estimator_full_deviation_ui_help">Стандартное отклонение длин строк, для всего текста</string>
+    <string name="estimator_paragraph_deviation_ui_help">Стандартное отклонение длин строк, по правилам абзацев — без последней строки</string>
+
+    <string name="info_dialog_title">Выбранное</string>
 </resources>
